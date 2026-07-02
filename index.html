@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="am">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>የሰርግ ግብዣ | Wedding Invitation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Montserrat:wght@300;400;600&family=Noto+Serif+Ethiopic:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ==========================================================================
+           1. ማዕከላዊ ቀለማትና ዲዛይን (CSS Variables)
+           ========================================================================== */
+        :root {
+            --bg-color: #fffdf9;
+            --text-color: #2c2520;
+            --primary-color: #8a1c14; /* ደማቅ ቀይ የጥበብ ቀለም */
+            --secondary-color: #115740; /* አረንጓዴ */
+            --accent-color: #d4af37; /* ወርቃማ */
+            --card-bg: #ffffff;
+            --shadow: rgba(138, 28, 20, 0.1);
+        }
+
+        /* ለሊት (Dark Mode) ማስተካከያ */
+        [data-theme="dark"] {
+            --bg-color: #1a1613;
+            --text-color: #f5f0eb;
+            --primary-color: #e5b842;
+            --secondary-color: #a3d1bd;
+            --card-bg: #26201b;
+            --shadow: rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Noto Serif Ethiopic', 'Playfair Display', serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background 0.5s, color 0.5s;
+        }
+
+        /* ==========================================================================
+           2. ሲኒማቲክ መግቢያ (Cinematic Intro Section)
+           ========================================================================== */
+        .cinematic-intro {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slideshow-container {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .slide {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+        }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            filter: brightness(45%);
+        }
+
+        .slide.active { opacity: 1; }
+
+        .intro-content {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            color: #ffffff;
+            padding: 20px;
+        }
+
+        .couple-names {
+            font-size: 3.5rem;
+            margin: 10px 0;
+            font-family: 'Playfair Display', 'Noto Serif Ethiopic', serif;
+            text-shadow: 2px 2px 15px rgba(0,0,0,0.8);
+        }
+
+        .ampersand {
+            color: var(--accent-color);
+            display: block;
+            font-size: 2rem;
+            margin: 5px 0;
+        }
+
+        .intro-date {
+            font-size: 1.5rem;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+            text-shadow: 1px 1px 8px rgba(0,0,0,0.8);
+        }
+
+        .enter-btn {
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            color: white;
+            border: none;
+            padding: 15px 45px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            transition: 0.3s ease;
+        }
+
+        .enter-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
+        }
+
+        /* ==========================================================================
+           3. ዋናው የግብዣ ክፍል (Main Invitation)
+           ========================================================================== */
+        .hidden { display: none !important; }
+
+        .main-invitation {
+            max-width: 650px;
+            margin: 0 auto;
+            padding: 20px;
+            background: var(--bg-color);
+        }
+
+        .theme-toggle { text-align: right; margin: 15px 0; }
+        
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input { opacity: 0; width: 0; height: 0; }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6px;
+            box-sizing: border-box;
+        }
+
+        .slider::before {
+            position: absolute;
+            content: "";
+            height: 26px; width: 26px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        input:checked + .slider { background-color: #4a3f35; }
+        input:checked + .slider::before { transform: translateX(26px); }
+        .sun-icon { font-size: 14px; }
+        .moon-icon { font-size: 14px; }
+
+        /* ላዕላይ ምስል */
+        .header-image img {
+            width: 100%;
+            max-height: 350px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .main-title {
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            margin: 25px 0 15px 0;
+        }
+
+        .bible-verses {
+            font-style: italic;
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary-color);
+            box-shadow: 0 4px 15px var(--shadow);
+            text-align: left;
+            line-height: 1.8;
+            margin-bottom: 35px;
+        }
+
+        .verse {
+            color: var(--secondary-color);
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+        .verse:first-child { margin-top: 0; }
+        .verse-text { margin: 0; color: var(--text-color); }
+
+        /* የግብዣ ጽሑፍ */
+        .invitation-letter {
+            background: var(--card-bg);
+            padding: 30px 20px;
+            border-radius: 8px;
+            border: 1px double var(--accent-color);
+            box-shadow: 0 4px 15px var(--shadow);
+            margin-bottom: 35px;
+        }
+
+        .invitation-letter h2 { color: var(--primary-color); margin-top: 0; }
+        .invitation-text { line-height: 1.9; font-size: 1.1rem; }
+
+        /* የመረጃ ካርዶች (Grid) */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            margin: 35px 0;
+        }
+
+        .detail-card {
+            background: var(--card-bg);
+            padding: 20px 10px;
+            border-radius: 8px;
+            border-bottom: 3px solid var(--accent-color);
+            box-shadow: 0 4px 15px var(--shadow);
+            transition: transform 0.3s;
+        }
+        .detail-card:hover { transform: translateY(-5px); }
+        .card-icon { font-size: 2.2rem; margin-bottom: 10px; }
+        .detail-card h3 { margin: 5px 0; color: var(--secondary-color); }
+        .detail-card p { margin: 5px 0; font-weight: bold; }
+
+        /* የቀን መቁጠሪያ (Calendar) */
+        .calendar-container {
+            background: var(--card-bg);
+            border: 1px solid var(--accent-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 35px;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .calendar-header h3 { color: var(--primary-color); margin-top: 0; font-size: 1.3rem; }
+        
+        .calendar-weekdays, .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+        }
+
+        .calendar-weekdays div {
+            font-weight: bold;
+            color: var(--secondary-color);
+            padding: 10px 0;
+            font-size: 0.9rem;
+        }
+
+        .calendar-days div { padding: 12px 0; border-radius: 4px; font-weight: 500; }
+        
+        .calendar-days .wedding-day {
+            background-color: var(--primary-color);
+            color: white !important;
+            font-weight: bold;
+            box-shadow: 0 0 12px var(--primary-color);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
+        }
+
+        /* መርኃግብር (Timeline) */
+        .schedule-timeline { margin-bottom: 35px; }
+        .schedule-timeline h3 { color: var(--primary-color); font-size: 1.5rem; margin-bottom: 25px; }
+        
+        .timeline {
+            border-left: 2px solid var(--accent-color);
+            padding-left: 25px;
+            text-align: left;
+            margin-left: 15px;
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+        }
+        .timeline-item:last-child { margin-bottom: 0; }
+
+        .timeline-item::before {
+            content: '✥';
+            position: absolute;
+            left: -34px;
+            top: -2px;
+            background: var(--bg-color);
+            color: var(--primary-color);
+            font-weight: bold;
+            font-size: 1.2rem;
+            width: 20px; height: 20px;
+            text-align: center;
+        }
+
+        .time { font-weight: bold; color: var(--secondary-color); font-size: 1.1rem; }
+        .event { font-weight: bold; font-size: 1.2rem; margin: 5px 0; color: var(--primary-color); }
+        .description { color: var(--text-color); opacity: 0.9; font-size: 0.95rem; }
+
+        /* የቦታ ክፍል */
+        .location-section { margin-bottom: 35px; }
+        .location-section h2 { color: var(--primary-color); }
+        
+        .map-placeholder {
+            background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600');
+            background-size: cover;
+            background-position: center;
+            padding: 40px 20px;
+            border-radius: 8px;
+            color: white;
+            margin-bottom: 15px;
+            border: 1px solid var(--accent-color);
+        }
+
+        .directions-btn, .submit-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 14px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.1rem;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(17, 87, 64, 0.2);
+            transition: 0.3s;
+        }
+        .directions-btn:hover { background-color: var(--primary-color); }
+
+        /* የእንግዶች መልዕክት ቦክስ */
+        .guest-wishes { margin-bottom: 35px; }
+        .guest-wishes h2 { color: var(--primary-color); }
+        
+        .wish-form {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow);
+            border: 1px solid #f0e6cf;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border: 1px solid var(--accent-color);
+            background: var(--bg-color);
+            color: var(--text-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        .form-textarea { height: 100px; resize: none; }
+
+        .submit-btn { border-radius: 4px; }
+        .submit-btn:hover { background-color: var(--primary-color); }
+
+        .wishes-display {
+            margin-top: 20px;
+            max-height: 250px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .wish-item {
+            background: var(--card-bg);
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            text-align: left;
+            border-left: 4px solid var(--accent-color);
+            box-shadow: 0 2px 8px var(--shadow);
+        }
+
+        /* ፎቶ ማዕከል */
+        .photo-gallery { margin-bottom: 35px; }
+        .photo-gallery h2 { color: var(--primary-color); }
+        
+        .upload-label {
+            display: block;
+            border: 2px dashed var(--accent-color);
+            padding: 35px 20px;
+            cursor: pointer;
+            border-radius: 8px;
+            background: var(--card-bg);
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+        .upload-icon { font-size: 2.5rem; display: block; margin-bottom: 10px; }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .photo-grid img { width: 100%; height: 120px; object-fit: cover; border-radius: 6px; border: 1px solid var(--accent-color); }
+
+        /* ፎተር */
+        .footer {
+            margin-top: 50px;
+            padding: 20px;
+            border-top: 1px solid var(--accent-color);
+            font-size: 0.95rem;
+            color: var(--text-color);
+            opacity: 0.8;
+        }
+
+        /* የሙዚቃ መቆጣጠሪያ ቋሚ ቁልፍ */
+        .audio-controls { position: fixed; bottom: 20px; right: 20px; z-index: 100; }
+        .mute-btn {
+            font-size: 1.6rem;
+            background: var(--card-bg);
+            border: 2px solid var(--accent-color);
+            border-radius: 50%;
+            width: 50px; height: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex; align-items: center; justify-content: center;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==========================================================================
+       1. ሲኒማቲክ መግቢያ ክፍል (Cinematic Intro)
+       ========================================================================== -->
+    <section id="cinematic-intro" class="cinematic-intro">
+        <div class="slideshow-container">
+            <div class="slide active">
+                <img src="images/1.jpg"  alt="Habesha Wedding Dress">
+            </div>
+            <div class="slide">
+                <img src="images/2.jpg" alt="Habesha Wedding Gold Rings">
+            </div>
+            <div class="slide">
+                <img src="images/3.jpg" alt="Habesha Wedding Celebration">
+            </div>
+        </div>
+        
+        <div class="intro-content">
+            <h1 class="couple-names">
+                <span class="groom-name">ልደት</span>
+                <span class="ampersand">&</span>
+                <span class="bride-name">ሞገስ</span>
+            </h1>
+            <p class="intro-date">ሐምሌ 12, 2018</p>
+            <button id="enter-btn" class="enter-btn">የክብር ግብዣውን ይክፈቱ (Enter)</button>
+        </div>
+        
+        <!-- የጀርባ ሙዚቃ ማጫወቻ -->
+        <div class="audio-controls">
+            <button id="mute-btn" class="mute-btn">🔊</button>
+            <audio id="bg-music" loop>
+                <!-- <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"> -->
+            </audio>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+       2. ዋናው የግብዣ መረጃ ክፍል (Main Invitation)
+       ========================================================================== -->
+    <section id="main-invitation" class="main-invitation hidden">
+        
+        <!-- የገጽታ መቀያየሪያ (Light/Dark Mode) -->
+        <div class="theme-toggle">
+            <label class="switch">
+                <input type="checkbox" id="theme-switch">
+                <span class="slider round">
+                    <span class="sun-icon">☀️</span>
+                    <span class="moon-icon">🌙</span>
+                </span>
+            </label>
+        </div>
+
+        <!-- ላዕላይ ምስልና ጥቅሶች -->
+        <header class="header">
+            <div class="header-image">
+                <img src="images/1.jpg" alt="Wedding Banner">
+            </div>
+            <div class="header-content">
+                <h1 class="main-title">የሰርግ ሥነ-ሥርዓት ግብዣ</h1>
+                <div class="bible-verses">
+                    <p class="verse">✥ ዘፍጥረት 2:24</p>
+                    <p class="verse-text">"ሰው አባቱንና እናቱን ይተው ከሚስቱም ጋር ይጣበቃል፤ ሁለቱም አንድ ሥጋ ይሆናሉ።"</p>
+                    <p class="verse">✥ 1 ቆሮንቶስ 13:4-7</p>
+                    <p class="verse-text">"ፍቅር ይታገሣል፥ ይራራል… ሁሉን ይሸከማል፥ ሁሉን ያምናል፥ ሁሉን ተስፋ ያደርጋል፥ ሁሉን ይታገሣል።"</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- የግብዣ ደብዳቤ -->
+        <section class="invitation-letter">
+            <div class="letter-content">
+                <h2>የግብዣ መልዕክት</h2>
+                <p class="invitation-text">
+                    በእግዚአብሔር ፍቅር እና በቤተሰቦቻችን ቡራኬ፣ በዚህ ታላቅና የደስታ ቀን ከእኛ ጋር አብራችሁ እንድትደሰቱ በክብር እንጋብዛችኋለን።
+                    የሰርግ ሥነ ሥርዓታችንን በክቡር ተሳትፎዎ አሳምረው፣ አዲሱን የፍቅራችንን ጉዞ በምርቃት እንዲሞሉልን እንወዳለን።
+                </p>
+            </div>
+        </section>
+
+        <!-- ዋና መረጃዎች -->
+        <section class="wedding-details">
+            <h2>የሰርግ መረጃዎች</h2>
+            <div class="details-grid">
+                <div class="detail-card">
+                    <div class="card-icon">📆</div>
+                    <h3>ቀን</h3>
+                    <p>ሐምሌ 12, 2018 ዓ.ም</p>
+                </div>
+                <div class="detail-card">
+                    <div class="card-icon">⏰</div>
+                    <h3>ሰዓት</h3>
+                    <p>9:00 ጠዋት ጀምሮ</p>
+                </div>
+                <div class="detail-card">
+                    <div class="card-icon">📍</div>
+                    <h3>ዋና ቦታ</h3>
+                    <p>ቃሊቲ ቅዱስ ገብርኤል ቤ/ክ</p>
+                </div>
+            </div>
+
+            <!-- የቀን መቁጠሪያ (ሐምሌ 2018) -->
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <h3>ሐምሌ 2018 ዓ.ም</h3>
+                </div>
+                <div class="calendar-grid">
+                    <div class="calendar-weekdays">
+                        <div>እሁድ</div>
+                        <div>ሰኞ</div>
+                        <div>ማክሰ</div>
+                        <div>ረቡዕ</div>
+                        <div>ሐሙስ</div>
+                        <div>ዓርብ</div>
+                        <div>ቅዳሜ</div>
+                    </div>
+                    <div class="calendar-days">
+                        <!-- ቀናቱ በጃቫስክሪፕት እዚህ ይሞላሉ -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- የዕለቱ መርሃ-ግብር መስመር (Timeline) -->
+            <div class="schedule-timeline">
+                <h3>የዕለቱ የተያዙ መርኃግብሮች</h3>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="time">9:00 - 3:00</div>
+                        <div class="event">ስርዓተ ጋብቻ እና ቅዳሴ</div>
+                        <div class="description">በቃሊቲ ቅዱስ ገብርኤል ቤተክርስቲያን የቅዱስ ቁርባንና የስርዓተ ጋብቻ ጸሎት ይከናወናል።</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time">3:30</div>
+                        <div class="event">የቤተክርስቲያን ፕሮግራም ማጠቃለያ</div>
+                        <div class="description">የቤተክርስቲያን ስነ-ስርዓት በሰላም ይጠናቀቃል።</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time">4:00</div>
+                        <div class="event">ከቤተክርስቲያን ወደ ሙሽራው ቤት ጉዞ</div>
+                        <div class="description">ክቡራን ታዳሚዎች ሙሽሮችን አጅበው ወደ ሙሽራው መኖሪያ ቤት ያመራሉ።</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time">5:00</div>
+                        <div class="event">የቁርስና የፎቶ ፕሮግራም</div>
+                        <div class="description">በሙሽራው ቤት የቁርስ ማዕድ ይቀርባል፤ የማስታወሻ ፎቶም ይነሳል።</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time">6:00</div>
+                        <div class="event">ጉዞ ወደ ሙሽሪት ቤት</div>
+                        <div class="description">የሙሽራው ወገን ሙሽሪትን ለማጀብና ወደ ቤቷ ለመሄድ ጉዞ ይጀምራል።</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time">7:00</div>
+                        <div class="event">የምሳ ፕሮግራም መጀመር</div>
+                        <div class="description">በሙሽሪት መኖሪያ ቤት የተዘጋጀው የምሳ ማዕድ በደስታ ይከፈታል።</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time">9:00</div>
+                        <div class="event">የፎቶ ፕሮግራም</div>
+                        <div class="description">በሙሽሪት ቤት ከቤተሰብና ከተወዳጅ እንግዶች ጋር የማስታወሻ ፎቶ ይነሳል።</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time">9:30</div>
+                        <div class="event">ጉዞ ወደ አዳራሽ</div>
+                        <div class="description">ከቤት ወጥቶ በቀጥታ ወደ ቃሊቲ ቅዱስ ገብርኤል ቤ/ክ አዳራሽ ጉዞ ይደረጋል።</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time">11:30</div>
+                        <div class="event">የእራት ፕሮግራም መጀመር</div>
+                        <div class="description">በአዳራሹ የተዘጋጀው የእራት ማዕድ በታዳሚው ፊት ይቀርባል።</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time">12:30</div>
+                        <div class="event">የክሌት እና የኬክ መቁረስ</div>
+                        <div class="description">ሙሽሮች የደስታቸውን መግለጫ ኬክና ባህላዊ ስነ-ስርዓቶችን ያከናውናሉ።</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="time">1:00</div>
+                        <div class="event">የፎቶ እና የፕሮግራሙ ፍጻሜ</div>
+                        <div class="description">የመጨረሻ ፎቶግራፎች ተነስተው ሙሉው የሰርግ መርኃግብር በሰላም ይፈጸማል።</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- የካርታ ቦታ ክፍል -->
+        <section class="location-section">
+            <h2>የሰርግ ሥፍራ አድራሻ</h2>
+            <div class="location-content">
+                <div class="map-container">
+                    <div id="map" class="map-placeholder">
+                        <div class="map-info">
+                            <h3>ቃሊቲ ቅዱስ ገብርኤል ቤተክርስቲያን</h3>
+                            <p>📍 ቃሊቲ፣ አዲስ አበባ (Kality, Addis Ababa)</p>
+                            <p>ትክክለኛውን የካርታ አቅጣጫ ለመክፈት ከታች ያለውን ቁልፍ ይጫኑ</p>
+                        </div>
+                    </div>
+                    <button id="directions-btn" class="directions-btn">📍 አቅጣጫ በGoogle Maps ይመልከቱ</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- የእንግዶች አስተያየት መጻፊያ ቦክስ -->
+        <section class="guest-wishes">
+            <h2>የእንግዶች የደስታ መግለጫ መድረክ</h2>
+            <div class="wishes-container">
+                <div class="wish-form">
+                    <input type="text" id="guest-name" placeholder="ሙሉ ስምዎ" class="form-input">
+                    <textarea id="guest-message" placeholder="ለሙሽሮቹ ያለዎትን መልካም ምኞት እዚህ ይጻፉ..." class="form-textarea"></textarea>
+                    <button id="submit-wish" class="submit-btn">የመልካም ምኞት መልዕክት ላክ</button>
+                </div>
+                <div id="wishes-display" class="wishes-display">
+                    <!-- እንግዶች የጻፉት መልእክት እዚህ ይደረደራል -->
+                </div>
+            </div>
+        </section>
+
+        <!-- የፎቶ መሰብሰቢያ ማዕከል -->
+        <section class="photo-gallery">
+            <h2>የእንግዶች የፎቶ ማስታወሻ ማዕከል</h2>
+            <div class="gallery-container">
+                <div class="upload-area">
+                    <input type="file" id="photo-upload" accept="image/*" multiple style="display: none;">
+                    <label for="photo-upload" class="upload-label">
+                        <span class="upload-icon">📸</span>
+                        <span>የሰርግ ላይ ፎቶዎችን እዚህ ይጫኑ (Upload Photos)</span>
+                    </label>
+                </div>
+                <div id="photo-grid" class="photo-grid">
+                    <!-- የተጫኑ ፎቶዎች እዚህ ይታያሉ -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ፎተር -->
+        <footer class="footer">
+            <p>&copy; 2028 ልደት & ሞገስ | በፍቅር የተዋቀረ ባህላዊ ጥሪ</p>
+        </footer>
+    </section>
+
+    <!-- ==========================================================================
+       3. ተግባራትን መቆጣጠሪያ (JavaScript ክፍል)
+       ========================================================================== -->
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            // 1. የኢንትሮ ስላይድሾው (Intro Slideshow)
+            const slides = document.querySelectorAll(".slide");
+            let currentSlide = 0;
+
+            setInterval(() => {
+                slides[currentSlide].classList.remove("active");
+                currentSlide = (currentSlide + 1) % slides.length;
+                slides[currentSlide].classList.add("active");
+            }, 4000);
+
+            // 2. ወደ ዋናው ገጽ መግቢያ (Enter Button Logic)
+            const enterBtn = document.getElementById("enter-btn");
+            const introSection = document.getElementById("cinematic-intro");
+            const mainSection = document.getElementById("main-invitation");
+            const bgMusic = document.getElementById("bg-music");
+
+            enterBtn.addEventListener("click", () => {
+                introSection.classList.add("hidden");
+                mainSection.classList.remove("hidden");
+                bgMusic.play().catch(err => console.log("Audio play blocked by browser settings"));
+            });
+
+            // 3. የድምጽ መቆጣጠሪያ (Mute/Unmute)
+            const muteBtn = document.getElementById("mute-btn");
+            muteBtn.addEventListener("click", () => {
+                if (bgMusic.muted) {
+                    bgMusic.muted = false;
+                    muteBtn.innerText = "🔊";
+                } else {
+                    bgMusic.muted = true;
+                    muteBtn.innerText = "🔇";
+                }
+            });
+
+            // 4. የቀንና ሌሊት ገጽታ (Theme Switcher)
+            const themeSwitch = document.getElementById("theme-switch");
+            themeSwitch.addEventListener("change", (e) => {
+                if (e.target.checked) {
+                    document.documentElement.setAttribute("data-theme", "dark");
+                } else {
+                    document.documentElement.removeAttribute("data-theme");
+                }
+            });
+
+            // 5. የሐምሌ 2018 ወር የቀን መቁጠሪያ ማመንጫ (ሐምሌ 12ን አድምቆ)
+            const calendarDaysContainer = document.querySelector(".calendar-days");
+            // ሐምሌ 1 ቀን 2018 ዓ.ም እለተ ረቡዕ ይጀምራል (ባዶ ቀናት = 3)
+            const startingEmptyDays = 3; 
+            const totalDaysInMonth = 30;
+
+            // ባዶ ቀናት መሙላት
+            for (let i = 0; i < startingEmptyDays; i++) {
+                const emptyDiv = document.createElement("div");
+                calendarDaysContainer.appendChild(emptyDiv);
+            }
+
+            // ቀናቱን መሙላትና ሐምሌ 12ን ልዩ ማድረግ
+            for (let day = 1; day <= totalDaysInMonth; day++) {
+                const dayDiv = document.createElement("div");
+                dayDiv.innerText = day;
+                if (day === 12) {
+                    dayDiv.classList.add("wedding-day");
+                }
+                calendarDaysContainer.appendChild(dayDiv);
+            }
+
+            // 6. የእንግዶች መልዕክት መቀበያ (Wishes Board)
+            const submitWishBtn = document.getElementById("submit-wish");
+            const guestNameInput = document.getElementById("guest-name");
+            const guestMessageInput = document.getElementById("guest-message");
+            const wishesDisplay = document.getElementById("wishes-display");
+
+            submitWishBtn.addEventListener("click", () => {
+                const name = guestNameInput.value.trim();
+                const message = guestMessageInput.value.trim();
+
+                if (name && message) {
+                    const wishItem = document.createElement("div");
+                    wishItem.classList.add("wish-item");
+                    wishItem.innerHTML = `<strong>✍️ ${name}</strong><p style="margin:6px 0 0 0;">${message}</p>`;
+                    wishesDisplay.prepend(wishItem);
+
+                    guestNameInput.value = "";
+                    guestMessageInput.value = "";
+                } else {
+                    alert("እባክዎ ስምዎትንና መልዕክትዎን በትክክል ያስገቡ!");
+                }
+            });
+
+            // 7. የእንግዶች ፎቶ መጫኛና ማሳያ (Photo Upload Logic)
+            const photoUploadInput = document.getElementById("photo-upload");
+            const photoGrid = document.getElementById("photo-grid");
+
+            photoUploadInput.addEventListener("change", (e) => {
+                const files = e.target.files;
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file.type.startsWith("image/")) {
+                        const reader = new FileReader();
+                        reader.onload = (event) => {
+                            const img = document.createElement("img");
+                            img.src = event.target.result;
+                            photoGrid.appendChild(img);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+
+            // 8. የካርታ አቅጣጫ ቁልፍ (የቀረቡትን መጋጠሚያዎች በመጠቀም)
+            const directionsBtn = document.getElementById("directions-btn");
+            directionsBtn.addEventListener("click", () => {
+                window.open("https://www.google.com/maps/search/?api=1&query=8.911514019791918,38.76872029227236", "_blank");
+            });
+        });
+    </script>
+</body>
+</html>
