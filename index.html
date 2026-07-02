@@ -689,19 +689,41 @@
     <!-- ==========================================================================
        3. ተግባራትን መቆጣጠሪያ (JavaScript ክፍል)
        ========================================================================== -->
+    <!-- ==========================================================================
+       3. ተግባራትን መቆጣጠሪያ ከነፃ Firebase ዳታቤዝ ጋር
+       ========================================================================== -->
+    <!-- የFirebase ሶፍትዌር ስብስቦችን (v8 CDN) ከኢንተርኔት መጥራት -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
     <script>
+        // የእርስዎ ትክክለኛ የFirebase መረጃዎች ማዋቀሪያ
+        const firebaseConfig = {
+            apiKey: "AIzaSyAb92hx9FtGIkStu4SyPh9606FAMcsBIBk",
+            authDomain: "wedding-invitation-4b8eb.firebaseapp.com",
+            databaseURL: "https://wedding-invitation-4b8eb-default-rtdb.firebaseio.com",
+            projectId: "wedding-invitation-4b8eb",
+            storageBucket: "wedding-invitation-4b8eb.firebasestorage.app",
+            messagingSenderId: "5068860846",
+            appId: "1:5068860846:web:2cd5e869331a60a9ea2c3f"
+        };
+
+        // Firebase-ን ማስጀመር
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        const storage = firebase.storage();
+
         document.addEventListener("DOMContentLoaded", () => {
-            // 1. የኢንትሮ ስላይድሾው (Intro Slideshow)
+            // --- ሀ. የድሮ ዲዛይን ተግባራት (Slideshow, Enter, Theme, Calendar) ---
             const slides = document.querySelectorAll(".slide");
             let currentSlide = 0;
-
             setInterval(() => {
                 slides[currentSlide].classList.remove("active");
                 currentSlide = (currentSlide + 1) % slides.length;
                 slides[currentSlide].classList.add("active");
             }, 4000);
 
-            // 2. ወደ ዋናው ገጽ መግቢያ (Enter Button Logic)
             const enterBtn = document.getElementById("enter-btn");
             const introSection = document.getElementById("cinematic-intro");
             const mainSection = document.getElementById("main-invitation");
@@ -710,69 +732,57 @@
             enterBtn.addEventListener("click", () => {
                 introSection.classList.add("hidden");
                 mainSection.classList.remove("hidden");
-                bgMusic.play().catch(err => console.log("Audio play blocked by browser settings"));
+                bgMusic.play().catch(err => console.log("Audio blocked"));
             });
 
-            // 3. የድምጽ መቆጣጠሪያ (Mute/Unmute)
             const muteBtn = document.getElementById("mute-btn");
             muteBtn.addEventListener("click", () => {
-                if (bgMusic.muted) {
-                    bgMusic.muted = false;
-                    muteBtn.innerText = "🔊";
-                } else {
-                    bgMusic.muted = true;
-                    muteBtn.innerText = "🔇";
-                }
+                if (bgMusic.muted) { bgMusic.muted = false; muteBtn.innerText = "🔊"; }
+                else { bgMusic.muted = true; muteBtn.innerText = "🔇"; }
             });
 
-            // 4. የቀንና ሌሊት ገጽታ (Theme Switcher)
             const themeSwitch = document.getElementById("theme-switch");
             themeSwitch.addEventListener("change", (e) => {
-                if (e.target.checked) {
-                    document.documentElement.setAttribute("data-theme", "dark");
-                } else {
-                    document.documentElement.removeAttribute("data-theme");
-                }
+                if (e.target.checked) { document.documentElement.setAttribute("data-theme", "dark"); }
+                else { document.documentElement.removeAttribute("data-theme"); }
             });
 
-            // 5. የሐምሌ 2018 ወር የቀን መቁጠሪያ ማመንጫ (ሐምሌ 12ን አድምቆ)
             const calendarDaysContainer = document.querySelector(".calendar-days");
-            // ሐምሌ 1 ቀን 2018 ዓ.ም እለተ ረቡዕ ይጀምራል (ባዶ ቀናት = 3)
             const startingEmptyDays = 3; 
             const totalDaysInMonth = 30;
-
-            // ባዶ ቀናት መሙላት
             for (let i = 0; i < startingEmptyDays; i++) {
-                const emptyDiv = document.createElement("div");
-                calendarDaysContainer.appendChild(emptyDiv);
+                calendarDaysContainer.appendChild(document.createElement("div"));
             }
-
-            // ቀናቱን መሙላትና ሐምሌ 12ን ልዩ ማድረግ
             for (let day = 1; day <= totalDaysInMonth; day++) {
                 const dayDiv = document.createElement("div");
                 dayDiv.innerText = day;
-                if (day === 12) {
-                    dayDiv.classList.add("wedding-day");
-                }
+                if (day === 12) { dayDiv.classList.add("wedding-day"); }
                 calendarDaysContainer.appendChild(dayDiv);
             }
 
-            // 6. የእንግዶች መልዕክት መቀበያ (Wishes Board)
+            const directionsBtn = document.getElementById("directions-btn");
+            directionsBtn.addEventListener("click", () => {
+                window.open("https://www.google.com/maps/search/?api=1&query=8.911514019791918,38.76872029227236", "_blank");
+            });
+
+
+            // --- ለ. የእንግዶች መልዕክት መቀበያ (Firebase Realtime Database) ---
             const submitWishBtn = document.getElementById("submit-wish");
             const guestNameInput = document.getElementById("guest-name");
             const guestMessageInput = document.getElementById("guest-message");
             const wishesDisplay = document.getElementById("wishes-display");
 
+            // አዲስ መልዕክት ሲጻፍ ወደ Firebase መላክ
             submitWishBtn.addEventListener("click", () => {
                 const name = guestNameInput.value.trim();
                 const message = guestMessageInput.value.trim();
 
                 if (name && message) {
-                    const wishItem = document.createElement("div");
-                    wishItem.classList.add("wish-item");
-                    wishItem.innerHTML = `<strong>✍️ ${name}</strong><p style="margin:6px 0 0 0;">${message}</p>`;
-                    wishesDisplay.prepend(wishItem);
-
+                    database.ref('wishes').push({
+                        name: name,
+                        message: message,
+                        timestamp: Date.now()
+                    });
                     guestNameInput.value = "";
                     guestMessageInput.value = "";
                 } else {
@@ -780,7 +790,17 @@
                 }
             });
 
-            // 7. የእንግዶች ፎቶ መጫኛና ማሳያ (Photo Upload Logic)
+            // ከዳታቤዝ መልዕክቶችን በLive ተከታትሎ ገጹ ላይ መደርደር
+            database.ref('wishes').orderByChild('timestamp').on('child_added', (snapshot) => {
+                const data = snapshot.val();
+                const wishItem = document.createElement("div");
+                wishItem.classList.add("wish-item");
+                wishItem.innerHTML = `<strong>✍️ ${data.name}</strong><p style="margin:6px 0 0 0;">${data.message}</p>`;
+                wishesDisplay.prepend(wishItem);
+            });
+
+
+            // --- ሐ. የእንግዶች ፎቶ መጫኛና ማሳያ (Firebase Storage) ---
             const photoUploadInput = document.getElementById("photo-upload");
             const photoGrid = document.getElementById("photo-grid");
 
@@ -789,21 +809,29 @@
                 for (let i = 0; i < files.length; i++) {
                     const file = files[i];
                     if (file.type.startsWith("image/")) {
-                        const reader = new FileReader();
-                        reader.onload = (event) => {
-                            const img = document.createElement("img");
-                            img.src = event.target.result;
-                            photoGrid.appendChild(img);
-                        };
-                        reader.readAsDataURL(file);
+                        const fileName = Date.now() + "_" + file.name;
+                        const storageRef = storage.ref('wedding_photos/' + fileName);
+                        const uploadTask = storageRef.put(file);
+
+                        uploadTask.on('state_changed', 
+                            null, 
+                            (error) => { alert("ፎቶ መጫን አልተሳካም፦ " + error.message); }, 
+                            () => {
+                                uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                                    database.ref('photos').push({ url: downloadURL });
+                                });
+                            }
+                        );
                     }
                 }
             });
 
-            // 8. የካርታ አቅጣጫ ቁልፍ (የቀረቡትን መጋጠሚያዎች በመጠቀም)
-            const directionsBtn = document.getElementById("directions-btn");
-            directionsBtn.addEventListener("click", () => {
-                window.open("https://www.google.com/maps/search/?api=1&query=8.911514019791918,38.76872029227236", "_blank");
+            // ከዳታቤዝ የተጫኑትን ፎቶዎች በLive እያነበቡ ማሳየት
+            database.ref('photos').on('child_added', (snapshot) => {
+                const data = snapshot.val();
+                const img = document.createElement("img");
+                img.src = data.url;
+                photoGrid.appendChild(img);
             });
         });
     </script>
